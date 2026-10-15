@@ -150,9 +150,9 @@ python3 scripts/gen_subs.py subs.json -o subs.ass
 
 | 声部 | 音色（edge-tts） | 语速/音高 | 内容 | 目标响度 |
 |---|---|---|---|---|
-| 解说 | `zh-CN-YunyangNeural`（云扬，新闻男声，葛优式平铺直叙） | rate -8%~-5%，pitch -4Hz | "如何拍"的教学台词（对应底部 Narr 字幕） | mean ≈ -18dB |
-| 广告语 | `zh-CN-YunjianNeural`（云健，沉稳广告男声） | rate +0%，pitch -5~-6Hz | 金句/意境句/结尾 slogan（对应 Quote/Slogan 字幕） | mean ≈ -20dB |
-| BGM | HY-Video 生成（提示词：luxury commercial background music, soft piano + ambient strings, no vocals no percussion）→ 抽音轨循环 | — | 全片铺垫 | mean ≈ -27dB，lowpass 6kHz |
+| 解说 | `zh-CN-YunyangNeural`（云扬，新闻男声，葛优式平铺直叙） | rate -6%~-12%，pitch -8Hz | "如何拍"的教学台词（对应底部 Narr 字幕） | mean ≈ **-15dB（全片最大声）** |
+| 广告语 | `zh-CN-YunjianNeural`（云健，沉稳广告男声） | rate +0%，pitch -5~-6Hz | 金句/意境句/结尾 slogan（对应 Quote/Slogan 字幕） | mean ≈ **-21dB（比解说小 6dB）** |
+| BGM | HY-Video 生成（提示词：luxury commercial background music, soft piano + ambient strings, no vocals no percussion）→ 抽音轨循环 | — | 全片铺垫 | mean ≈ **-31dB（几乎不可闻）**，lowpass 6kHz |
 
 **TTS 工具**：隔离 venv `pip install edge-tts`，免凭证直连；注意 rate 必须带符号（`+0%` 合法、`0%` 报错）。
 
@@ -162,7 +162,8 @@ python3 scripts/gen_subs.py subs.json -o subs.ass
 - 结尾 slogan 单独一条，压着盾徽卡起点开始
 
 ### 混音配比（ffmpeg 单命令实现）
-1. 先测每条 VO 的 mean_volume，换算 gain 使解说 ≈ -18dB、广告语 ≈ -20dB（例：mean -26.1dB 的解说加 8dB）
+1. **层次铁律（v1 翻车教训）**：解说 -15 / 广告语 -21 / BGM -31，三个声部各差 6dB、10dB——差距必须拉大，差 2dB 人耳分不出主次
+2. 先测每条 VO 的 mean_volume，换算 gain 对准上面三个目标值（例：mean -26.4dB 的解说加 11.4dB）
 2. BGM：`-stream_loop` 循环 → `atrim` 到片长 → `lowpass=f=6000` → `volume` 补到 -27dB → 首尾 fade
 3. 各 VO 用 `adelay=ms|ms` 排时间轴（对齐字幕 start，句间 ≥0.3s，时长超窗就提速重生成而不是硬叠）
 4. `amix=inputs=N:normalize=0` + `alimiter=limit=0.95` → `-t <片长>`
