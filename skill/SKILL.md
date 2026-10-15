@@ -140,6 +140,38 @@ python3 scripts/gen_subs.py subs.json -o subs.ass
 
 **环境坑**：ffmpeg 用隔离 venv 的 imageio-ffmpeg 静态二进制（含 libass）；中间产物放输出同目录 work/；`set -e` 下 `ffmpeg -i` 探测须 `|| true`（assemble.sh 已内置）；字体确认 `fc-list | grep -i "NotoSansCJK"`。
 
+## 第六步半：声音设计（三声部混音，缺了就没有"广告片味"）
+
+原片拆解结论（对 ref 音轨 3s 粒度 volumedetect 扫描实测）：
+- **解说峰值 ≈ -16~-18dB，BGM 底 ≈ -25~-27dB，两者相差约 10dB**；片尾 1s 内淡出归零
+- 生成片段自带的自然声/环境声**全部丢弃**（`-map 0:v` 重新配轨），原片画面下没有环境音
+
+### 声部规格
+
+| 声部 | 音色（edge-tts） | 语速/音高 | 内容 | 目标响度 |
+|---|---|---|---|---|
+| 解说 | `zh-CN-YunyangNeural`（云扬，新闻男声，葛优式平铺直叙） | rate -8%~-5%，pitch -4Hz | "如何拍"的教学台词（对应底部 Narr 字幕） | mean ≈ -18dB |
+| 广告语 | `zh-CN-YunjianNeural`（云健，沉稳广告男声） | rate +0%，pitch -5~-6Hz | 金句/意境句/结尾 slogan（对应 Quote/Slogan 字幕） | mean ≈ -20dB |
+| BGM | HY-Video 生成（提示词：luxury commercial background music, soft piano + ambient strings, no vocals no percussion）→ 抽音轨循环 | — | 全片铺垫 | mean ≈ -27dB，lowpass 6kHz |
+
+**TTS 工具**：隔离 venv `pip install edge-tts`，免凭证直连；注意 rate 必须带符号（`+0%` 合法、`0%` 报错）。
+
+### 台词-声部分配原则
+- 教程指令句（"千万不要着急拍全貌/找一个厨师"）→ 解说
+- 意境句与品牌金句（"让金属自己说话/不是一只盆而是一件器"）→ 广告语（更慢更沉）
+- 结尾 slogan 单独一条，压着盾徽卡起点开始
+
+### 混音配比（ffmpeg 单命令实现）
+1. 先测每条 VO 的 mean_volume，换算 gain 使解说 ≈ -18dB、广告语 ≈ -20dB（例：mean -26.1dB 的解说加 8dB）
+2. BGM：`-stream_loop` 循环 → `atrim` 到片长 → `lowpass=f=6000` → `volume` 补到 -27dB → 首尾 fade
+3. 各 VO 用 `adelay=ms|ms` 排时间轴（对齐字幕 start，句间 ≥0.3s，时长超窗就提速重生成而不是硬叠）
+4. `amix=inputs=N:normalize=0` + `alimiter=limit=0.95` → `-t <片长>`
+5. 合成：`-map 0:v -map 1:a -c:v copy`（画面无重编码）
+
+### 时间轴排布技巧
+- 先按字幕稿列 VO 清单（文本/声部/字幕窗口），TTS 后测实际时长，**总 VO 时长必须 ≤ 窗口总长**，超了统一提速（rate 从 -25% 逐步提到 +0%）
+- 金句卡在屏上停留时间短于语音时，让语音拖到卡后面说完（声音可以晚于卡片，不能早于）
+
 ## 第七步：验收清单
 
 - [ ] 有原片时：字幕样式/教学模块/结尾卡形态确认过（抽帧或拆解文）
@@ -149,6 +181,7 @@ python3 scripts/gen_subs.py subs.json -o subs.ass
 - [ ] logo 卡水印已裁除、品牌名拼写正确
 - [ ] 成片抽 5+ 帧目检字幕渲染（模型不支持读图时用时长+流信息校验并向用户说明）
 - [ ] 全片一个色彩世界、一盏主光、无 AI 文字
+- [ ] 声音三声部齐：解说/广告语/BGM 分层清晰（BGM 比人声低 ~10dB），生成片段原环境声已全部丢弃
 - [ ] 交付：成片 mp4 + 关键帧 + subs.ass，present_files 汇总
 
 ## 案例档案
