@@ -1,0 +1,9 @@
+{
+  "_说明": "「买不起」系列字幕规格模板。title=开场大标题，events=旁白/金句序列，slogan=结尾盾徽卡下方口号。style 可选 narr(旁白)/quote(大字金句)。时间为秒，按各片段 5.04s 递推排布。",
+  "title": {"text": "如 何 把 XXX 拍 成 买 不 起 的 样 子", "start": 0.3, "end": 3.7},
+  "events": [
+    {"start": 3.9,  "end": 7.7,  "text": "（教学模块：运镜/品牌/工艺，一句一镜）"},
+    {"start": 20.6, "end": 23.6, "text": "不 是 X X　而 是 X X", "style": "quote"}
+  ],
+  "slogan": {"text": "全 新 一 代 · 重 新 出 发", "start": 30.7, "end": 34.2, "y": 930}
+}
