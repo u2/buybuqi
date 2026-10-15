@@ -1,0 +1,25 @@
+[Script Info]
+; 教程体复刻字幕 v3 — 对应干净美学新镜头（公路/悬崖/侧跟/航拍）
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Title,Noto Sans CJK SC,76,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,2,0,1,0,0,5,0,0,0,1
+Style: Narr,Noto Sans CJK SC,48,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,1,0,1,0,0,2,40,40,110,1
+Style: Tag,Noto Sans CJK SC,44,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:03.00,Title,,0,0,0,,{\pos(960,470)}如 何 把 三 蹦 子 拍 成 买 不 起 的 样 子
+Dialogue: 0,0:00:03.20,0:00:05.60,Narr,,0,0,0,,第一步，找一条离你家十万八千里的路
+Dialogue: 0,0:00:05.90,0:00:07.70,Narr,,0,0,0,,再找一个男人
+Dialogue: 0,0:00:07.90,0:00:10.00,Narr,,0,0,0,,一定要望向远方，不能有目的地
+Dialogue: 0,0:00:10.60,0:00:12.70,Narr,,0,0,0,,这时，来一句大词汇的开场白
+Dialogue: 0,0:00:12.90,0:00:15.00,Narr,,0,0,0,,兼具商务风范与运动激情
+Dialogue: 0,0:00:15.70,0:00:18.20,Narr,,0,0,0,,就是——永远不抵达
+Dialogue: 0,0:00:18.40,0:00:19.95,Narr,,0,0,0,,你学会了吗
+Dialogue: 0,0:00:20.70,0:00:24.10,Tag,,0,0,0,,{\pos(960,930)}{\fsp10}全 新 一 代　·　重 新 出 发
